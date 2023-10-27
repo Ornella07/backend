@@ -20,7 +20,7 @@ class ProductManager {
         };
         this.products.push(product);
       } else {
-        throw new Error("El código del producto ya está en uso.");
+        console.error("El código del producto ya está en uso.");
       }
     }
   
@@ -37,7 +37,7 @@ class ProductManager {
       if (product) {
         return product;
       } else {
-        throw new Error("Producto no encontrado");
+        console.error("Producto no encontrado");
       }
     }
   }
