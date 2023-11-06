@@ -38,17 +38,16 @@ class ProductManager {
         }
     }
     
+    
+   async addProducts ( product ) {
 
-    async addProductos(producto){
-        // Agrega un producto al array de productos y guarda los datos en el archivo.
-        this.productos.push(producto);
-        const respuesta = await this.saveFile(this.productos)
+//Primero leemos el archivo (yo crearia una funcion readFile aparte pero ahora lo metemos aca directo)
 
-        if(respuesta){
-            console.log('🥳🥳🥳 Producto Creado 🥳🥳🥳');
-        }else{
-            console.log('😪😪😪 Oh Oh, hubo un error al crear el producto 😪😪😪');
-        }
+let productos = await fs.readFile(fileName, ‘utf-8’);
+
+productos.push(producto);
+
+}
     }
 
     // Verifico si el codigo es unico en la lista de productos
