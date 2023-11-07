@@ -6,106 +6,101 @@ class ProductManager {
     constructor(fileName){
         this.fileName = fileName;
         if(fs.existsSync(fileName)){
-             // Si el archivo existe, intenta leerlo y analizar su contenido
             try{
-                let productos = fs.readFileSync(fileName, 'utf-8');
-                this.productos = JSON.parse(productos);
+                let products = fs.readFileSync(fileName, 'utf-8');
+                this.products = JSON.parse(products)
             }catch(error){
-                 // Si hay un error al leer o analizar el archivo, se establece un arreglo vacío
-                this.productos = [];
+                this.products = [];
             }
         }else{
-            // Si el archivo no existe, se inicializa el array vacio.
-            this.productos = [];
+            this.products = [];
         }
     }
-    
-    getProducts() {
-        return this.productos;
+    getProducts(){
+        return this.products;
     }
-
-    async saveFile(data){
+    async saveFile(){
         try{
-            // Escribo los datos en el archivo como JSON formateado
             await fs.promises.writeFile(
                 this.fileName,
-                JSON.stringify(data, null, '\t')
-            );
-            return true;
+                JSON.stringify(this.products,null, '\t'),'utf-8');
         }catch(error){
-            console.error(error);
-            return false;
+            console.error(`Error ${error}`);
         }
     }
-    
-    
-   async addProducts ( product ) {
+    async addProducts(product){
+        const productos = this.products.find((p) => p.code === product.code)
 
-//Primero leemos el archivo (yo crearia una funcion readFile aparte pero ahora lo metemos aca directo)
-
-let productos = await fs.readFile(fileName, ‘utf-8’);
-
-productos.push(producto);
-
-}
-    }
-
-    // Verifico si el codigo es unico en la lista de productos
-    isCodeUnique(code){
-        return !this.productos.some(producto => producto.code === code)
-    }
-
-    // Genero el identificador unico con un valor aleatorio 
-    generateUniqueId(){
-        return Date.now().toString(36) + Math.random().toString(36).substring(2);
-    }
-
-    // Busco un producto por su ID
-    getProductById(id){
-        const producto = this.productos.find(producto => producto.id === id);
-        if(producto){
-            return producto;
+        if(productos){
+            console.log(`Error, codigo  existe`);
         }else{
-            console.error('😪😪😪 Producto no encontrado😪😪😪 ')
+            const newProduct = {...product, id:this.products.length + 1};
+            this.products.push(newProduct);
+
+            await this.saveFile();
         }
     }
-    consultarProductos(){
-        console.log(this.productos);
-        return this.productos;
+
+    async deleteProduct(id){
+        const prodSelect = this.products.find((p) => p.id == id);
+        if(prodSelect){
+            const newProdArr = this.products.filter((p)=> p.id != id);
+
+            this.products = newProdArr;
+
+            await this.saveFile();
+        }else{
+            console.log('Error');
+        }
+
+    }
+
+}
+
+class Products {
+    constructor(title, description, price, thumbnail, code, stock){
+        (this.title = title),
+        (this.description = description),
+        (this.price = price),
+        (this.thumbnail = thumbnail),
+        (this.code = code),
+        (this.stock = stock);
     }
 }
 
-class Producto {
-    constructor(productManager, title, description, price, thumbnail, code, stock) {
-        this.productManager = productManager;
 
-        if (this.productManager.isCodeUnique(code)) {
-            // Si el código es unico, se crea el objeto de producto y se agrega al administrador
-            const producto = {
-                id: this.productManager.generateUniqueId(),
-                title,
-                description,
-                price,
-                thumbnail,
-                code,
-                stock,
-            };
-            this.productManager.addProductos(producto);
-        } else {
-            console.error("El código del producto ya está en uso.");
-        }
-    }
-}
+(async () => {
+    const Productos = new ProductManager('./productos.json');
 
-// Pruebas
-// Creo una instancia de ProductManager con un nombre de archivo. 
-const productManager = new ProductManager("./products.json");
+   await Productos.addProducts(new Products("producto repetido", 
+    "Este es un producto repetido",
+    300,
+    "Sin imagen", 
+    "abc123",
+    10))
 
-// Creo el nuevo Porducto
-const producto1 = new Producto(productManager, "producto repetido", "Este es un producto repetido", 300, "Sin imagen", "abc123", 10);
-const producto2 = new Producto(productManager,  "producto repetido", "Este es un producto repetido", 300, "Sin imagen", "abc123", 10);
-const producto3 = new Producto(productManager, "producto repetido", "Este es un producto repetido", 300, "Sin imagen", "a2223", 10);
-const producto4 = new Producto(productManager, "producto repetido", "Este es un producto repetido", 300, "Sin imagen", "a125", 10);
+    Productos.getProducts();
+
+    await Productos.deleteProduct(1);
+
+    await Productos.addProducts(new Products("producto repetido", 
+    "Este es un producto repetido",
+    300,
+    "Sin imagen", 
+    "asd123",
+    10));
+
+    await Productos.addProducts(new Products("producto repetido", 
+    "Este es un producto repetido",
+    300,
+    "Sin imagen", 
+    "asf123",
+    10))
+
+
+    Productos.getProducts()
+})();
+
 
 
 
