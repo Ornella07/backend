@@ -104,5 +104,4 @@ class Products {
 
 
 
-console.log(productManager.consultarProductos())
 
