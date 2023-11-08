@@ -27,19 +27,24 @@ class ProductManager {
         }catch(error){
             console.error(`Error ${error}`);
         }
+
     }
+
     async addProducts(product){
-        const productos = this.products.find((p) => p.code === product.code)
-
-        if(productos){
-            console.log(`Error, codigo  existe`);
+        let productos = await fs.readFileSync(this.fileName, 'utf-8');
+        productos = JSON.parse(productos);
+        
+        const existeElCodigo = productos.find((p) => p.code === product.code)
+        if(existeElCodigo){
+            console.log('Error, el codigo existe');
         }else{
-            const newProduct = {...product, id:this.products.length + 1};
-            this.products.push(newProduct);
+            const newProduct = {...product, id:productos.length + 1};
+            productos.pus(newProduct)
 
-            await this.saveFile();
+            await this.saveFile(productos)
         }
     }
+
 
     async deleteProduct(id){
         const prodSelect = this.products.find((p) => p.id == id);
@@ -100,7 +105,6 @@ class Products {
 
     Productos.getProducts()
 })();
-
 
 
 
