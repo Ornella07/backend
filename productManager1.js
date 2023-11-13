@@ -14,6 +14,7 @@ class ProductManager {
             }
         }else{
             this.products = [];
+            fs.writeFileSync(this.fileName, JSON.strigify(this.products), 'utf-8');
         }
     }
     getProducts(){
