@@ -20,6 +20,14 @@ class ProductManager {
     getProducts(){
         return this.products;
     }
+    async readFile(){
+        try{
+            this.products = JSON.parse(await fs.readFileSync(this.fileName, 'utf-8'))
+        }
+        catch(error){
+            console.error(`Error ${error}`);
+        }
+    }
     async saveFile(){
         try{
             await fs.promises.writeFile(
@@ -32,17 +40,14 @@ class ProductManager {
     }
 
     async addProducts(product){
-        let productos = await fs.readFileSync(this.fileName, 'utf-8');
-        productos = JSON.parse(productos);
-        
-        const existeElCodigo = productos.find((p) => p.code === product.code)
-        if(existeElCodigo){
-            console.log('Error, el codigo existe');
-        }else{
-            const newProduct = {...product, id:productos.length + 1};
-            productos.pus(newProduct)
-
-            await this.saveFile(productos)
+       await this.readFile()
+        const existeElCodigo = this.products.find((p) => p.code === product.code)
+           if(existeElCodigo){
+            console.log('Error, el codigo existe);
+    }else{
+            const newProduct = {...product, id:this.products.length + 1 }
+            this.products.push(newProduct):
+            await this.saveFile()
         }
     }
 
@@ -56,11 +61,23 @@ class ProductManager {
 
             await this.saveFile();
         }else{
-            console.log('Error');
+            console.log('Error al eliminar el producto con id');
         }
 
     }
-
+    //aca se recibe el id 
+    async updateProductById ({id, ...newValuesForProduct}) {
+        await this.readFile();
+        
+  const productsForUpdate = this.products.find((p) => p.id === id);
+    if (productsForUpdate !== -1) {
+      this.products[productsForUpdate] = { ...this.products[productsForUpdate],newValuesForProduct };
+      this.saveFile(); // Guardar los productos en el archivo después de la actualización
+      return this.products[productsForUpdate];
+    } else {
+      throw new Error('Producto no encontrado');
+    }
+  }
 }
 
 class Products {
