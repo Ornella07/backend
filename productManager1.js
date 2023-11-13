@@ -40,15 +40,15 @@ class ProductManager {
     }
 
     async addProducts(product){
-       await this.readFile()
-        const existeElCodigo = this.products.find((p) => p.code === product.code)
-           if(existeElCodigo){
-            console.log('Error, el codigo existe);
-    }else{
-            const newProduct = {...product, id:this.products.length + 1 }
-            this.products.push(newProduct):
-            await this.saveFile()
-        }
+       await this.readFile();
+       const existeElCodigo = this.products.find((p) => p.code === product.code)
+       if(existeElCodigo){
+        console.log('Error, el codigo existe');
+       }else{
+        const newProduct = {...product, id:this.product.length + 1};
+        this.products.push(newProduct)
+        await this.saveFile();
+       }
     }
 
 
@@ -75,7 +75,7 @@ class ProductManager {
       this.saveFile(); // Guardar los productos en el archivo después de la actualización
       return this.products[productsForUpdate];
     } else {
-      throw new Error('Producto no encontrado');
+      console.error(`Producto con id: ${id} no encontrado`);
     }
   }
 }
@@ -123,7 +123,4 @@ class Products {
 
     Productos.getProducts()
 })();
-
-
-
 
