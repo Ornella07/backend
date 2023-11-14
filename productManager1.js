@@ -1,4 +1,3 @@
-//Modificacion de primer entregable, Trabajando con FileSystem 
 
 const fs = require('fs');
 
@@ -14,7 +13,7 @@ class ProductManager {
             }
         }else{
             this.products = [];
-            fs.writeFileSync(this.fileName, JSON.strigify(this.products), 'utf-8');
+            fs.writeFileSync(this.fileName, JSON.stringify(this.products), 'utf-8');
         }
     }
     getProducts(){
@@ -45,7 +44,7 @@ class ProductManager {
        if(existeElCodigo){
         console.log('Error, el codigo existe');
        }else{
-        const newProduct = {...product, id:this.product.length + 1};
+        const newProduct = {...product, id:this.products.length + 1};
         this.products.push(newProduct)
         await this.saveFile();
        }
@@ -63,7 +62,6 @@ class ProductManager {
         }else{
             console.log('Error al eliminar el producto con id');
         }
-
     }
     //aca se recibe el id 
     async updateProductById ({id, ...newValuesForProduct}) {
@@ -78,6 +76,9 @@ class ProductManager {
       console.error(`Producto con id: ${id} no encontrado`);
     }
   }
+ 
+ 
+
 }
 
 class Products {
@@ -102,9 +103,15 @@ class Products {
     "abc123",
     10))
 
+    await Productos.updateProductById ({
+        description: 'Esto esta maodifcado',
+        price: 300,
+        id:2
+      })
+
     Productos.getProducts();
 
-    await Productos.deleteProduct(1);
+    await Productos.deleteProduct(3);
 
     await Productos.addProducts(new Products("producto repetido", 
     "Este es un producto repetido",
@@ -123,4 +130,3 @@ class Products {
 
     Productos.getProducts()
 })();
-
